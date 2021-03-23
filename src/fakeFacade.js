@@ -61,9 +61,7 @@ function getPeople() {
 }
 
 function getPerson(number) {
-    return fakePeople.filter(person => { 
-        return person.phone.filter(phone => phone.number === number)
-    });
+    return fakePeople.filter(person => person.phone.some(phone => phone.number == number))
 }
 
 export {getPeople, getPerson}

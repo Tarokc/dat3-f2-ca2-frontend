@@ -2,6 +2,8 @@ import "./style.css"
 import "bootstrap/dist/css/bootstrap.css"
 import * as userFacade from './fakeFacade'
 
+hideAllShowOne("resultPerson");
+
 function hideAllShowOne(idToShow) {
   document.getElementById("resultTable").style = "display:none";
   document.getElementById("resultPerson").style = "display:none";
@@ -28,10 +30,13 @@ document.getElementById("newPersonBtn").onclick = function(evt) {
   evt.preventDefault();
 };
 
-hideAllShowOne("addPerson");
 
 document.getElementById("")
 
-document.getElementById("resultPerson").innerText
+document.getElementById("resultPerson").innerHTML = userFacade.getPerson(10102020)
 
-console.log(userFacade.getPerson(10102020));
+userFacade.getPerson(10102020).map(object => {for (var prop in object) {
+  if (Object.prototype.hasOwnProperty.call(object, prop)) {
+    console.log(object)
+  }
+}})
