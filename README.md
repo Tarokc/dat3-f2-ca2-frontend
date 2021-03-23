@@ -25,3 +25,4 @@ To minimize the footprint made by this code, it does not include the JavaScript 
 
 - In the root of the project type: `npm install jquery popper.js`
 - In your _index.js_ file, add this import just ABOVE the line that includes the bootstrap.css: `import "bootstrap"`
+# dat3-f2-ca2-frontend

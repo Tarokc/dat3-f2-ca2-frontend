@@ -4,102 +4,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Webpack/Babel-demo</title>
+  <title>CA2</title>
 </head>
 
 <body>
-  <!--
-    This div is added to remove the flicker that comes from bootstrap being loaded
-    first in index.js
-    REMEMBER to set display to "block" in index.js, otherwise you will not see anything
-  -->
-  <div id="all-content" style="display: none;">
-    <ul id="menu" class="header">
-      <li><a href="" id="about">About</a></li>
-      <li><a href="" id="ex1">Ex1</a></li>
-      <li><a href="" id="ex2">Ex2</a></li>
-      <li><a href="" id="ex3">Ex3</a></li>
-    </ul>
+<div class="container">
+  <h1>CA2 Spring 2021</h1>
 
-    <div class="content">
-
-      <!-- This is were you should place your basic HTML for exercise-1 -->
-      <div id="ex1_html" style="display:none;">
-        <h3>Exercise 1</h3>
-        <p>Add your basic HTML for Exercise 1 here</p>
-        <ul id="jokes"></ul>
-
-      </div>
-      <!-- End of HTML for exercise-1 -->
-
-
-
-      <!-- This is were you should place your basic HTML for exercise-2 -->
-      <div id="ex2_html" style="display:none;">
-        <h3>Exercise 2</h3>
-        <p id="ex2p">Add your basic HTML for Exercise 2 here</p>
-      </div>
-      <!-- End of HTML for exercise-2 -->
-
-
-      <!-- This is were you should place your basic HTML for exercise-3 -->
-      <div id="ex3_html" style="display:none;">
-        <h3>Ex-3</h3>
-        <p>Add your basic HTML for Exercise 3 here</p>
-
-        <div class="row" style="min-height: 5em;"">
-      <div class=" col-md-8 pre-scrollable" style="background-color: lightgrey;">
-          <h5>All Users</h5>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Age</th>
-                <th>Name
-                <th>
-                <th>Gender</th>
-                <th>Email </th>
-            </thead>
-            <tbody id="allUserRows">
-            <tbody>
-          </table>
-        </div>
-        <div class="col-md-4" style="background-color: powderblue;">
-          <h5>Find User</h5>
-        </div>
-      </div>
-      <div class="row" style="min-height: 5em;">
-        <div class="col-md-4" style="background-color: powderblue;">
-          <h5>Add User</h5>
-        </div>
-        <div class="col-md-4" style="background-color: lightgrey;">
-          <h5>Edit User</h5>
-        </div>
-        <div class="col-md-4" style="background-color: powderblue;">
-          <h5>Delete User</h5>
-        </div>
-      </div>
-      <!-- </div> -->
-      <!-- End of HTML for exercise-3 -->
-
-      <!---- HTML for the About page -->
-
+  <div class="input-group" id="searchBar">
+    <button class="btn btn-success" id="newPersonBtn">Add new Person</button>
+    <div class="input-group-prepend ml-auto">
+      <input class="form-control" id="searchfield" placeholder="Søg">
+      <button class="btn btn-primary" id="searchBtn">Søg</button>
     </div>
-
-    <div id="about_html" style="display:none;">
-      <h3>About</h3>
-      <p>Watch the small video given as intro to this code, BEFORE you start using it</p>
-    </div>
-    <!-- End of HTML for ABOUT Page -->
-
-
-    <!--End of all content -->
   </div>
 
-  <!-- #################################################################-->
-  <!-- IMPORTANT  DO NOT IMPORT ANY JavaScript in this file by YOURSELF -->
-  <!-- #################################################################-->
+  <div id="resultTable">
+    <table class="table" id="table">
+      <thead>
+      <th>Fornavn</th>
+      <th>Efternavn</th>
+      <th>Telefon</th>
+      <th>Adresse</th>
+      <th>By</th>
+      <th>Postnummer</th>
+      <th>Hobbies</th>
+      <th><i>Edit</i></th>
+      </thead>
+      <tbody id="tableBody">
+      <tr>
+        <td>Morten</td>
+        <td>Jensen</td>
+        <td>88888888</td>
+        <td>Vimmersvej 69</td>
+        <td>Helvede</td>
+        <td>0666</td>
+        <td>Spille pik!</td>
+        <td><a href="#"><i>Edit</i></a></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div id="resultPerson">
 
+  </div>
+
+  <div id="addPerson">
+    <form>
+      <div class="form-group row mt-3">
+        <div class="col">
+          <input class="form-control" placeholder="Fornavn" id="firstname">
+        </div>
+        <div class="col">
+          <input class="form-control" placeholder="Efternavn" id="lastname">
+        </div>
+        <div class="col">
+          <input class="form-control" placeholder="Telefon" id="phone">
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col">
+          <input class="form-control" placeholder="Vejnavn" id="address">
+        </div>
+        <div class="col">
+          <input class="form-control" placeholder="By" id="city">
+        </div>
+        <div class="col">
+          <input class="form-control" placeholder="Postnummer" id="postalcode">
+        </div>
+      </div>
+      <div>
+        <input placeholder="Hobby">
+        <button>Tilføj</button>
+        <table>
+          <tbody id="addedHobby">
+
+          </tbody>
+        </table>
+      </div>
+
+    </form>
+  </div>
+</div>
 </body>
 
 </html>
