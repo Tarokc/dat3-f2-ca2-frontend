@@ -1,5 +1,5 @@
-let fakePeople = [{
-    "id" : 1,
+let fakeUsers = [{
+    "id": 1,
     "firstname": "John",
     "lastname": "Smith",
     "address": {
@@ -26,42 +26,67 @@ let fakePeople = [{
         }
     ]
 },
-    {
-        "id" : 2,
-        "firstname": "John",
-        "lastname": "Smith",
-        "address": {
-            "street": "Roskildevej 2.A",
-            "postalcode": 4000,
-            "city": "Roskilde"
+{
+    "id": 2,
+    "firstname": "Morten",
+    "lastname": "Jensen",
+    "address": {
+        "street": "Spasservej 69",
+        "postalcode": 8888,
+        "city": "Somewhere"
+    },
+    "phone": [
+        {
+            "number": 12345678,
+            "description": "Work phone"
         },
-        "phone": [
-            {
-                "number": 10102025,
-                "description": "Work phone"
-            },
-            {
-                "number": 10102030,
-                "description": "Private phone"
-            }
-        ],
-        "email": "johnsmith@test.dk",
-        "hobbies": [
-            {
-                "name": "Flag fodbold",
-                "category": "Generel",
-                "type": "Udendørs"
-            }
-        ]
-    }
+        {
+            "number": 88888888,
+            "description": "Private phone"
+        }
+    ],
+    "email": "spasserman@retard.dk",
+    "hobbies": [
+        {
+            "name": "Svømning",
+            "category": "Generel",
+            "type": "Indendørs"
+        }
+    ]
+}
 ]
 
-function getPeople() {
-    return fakePeople;
+function getUsers() {
+    return fakeUsers;
 }
 
-function getPerson(number) {
-    return fakePeople.filter(person => person.phone.some(phone => phone.number == number))
+function getUser(number) {
+    return fakeUsers.filter(user => user.phone.some(phone => phone.number == number))
 }
 
-export {getPeople, getPerson}
+function getUserById(id) {
+    return fakeUsers.find(user => user.id == id);
+}
+
+function addUser(user) {
+    console.log(user)
+}
+
+function editUser(id, user) {
+    console.log(id)
+}
+
+function getPhoneNumbers(id) {
+    return getUserById(id).phone
+}
+
+function getAddress(id) {
+    return getUserById(id).address
+}
+
+function getUserHobbies(id) {
+    console.log(getUserById(id).hobbies)
+    return getUserById(id).hobbies
+}
+
+export { getUsers, getUser, getPhoneNumbers, getAddress, getUserHobbies }
