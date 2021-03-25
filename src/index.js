@@ -1,9 +1,11 @@
-import "./style.css"
-import * as userFacade from './scripts/userFacade'
+import "./style.css";
+import * as userFacade from "./scripts/userFacade";
+
+import { parse_str } from "locutus/php/strings";
+
 import "halfmoon/css/halfmoon-variables.min.css";
 import halfmoon from "halfmoon";
-window.halfmoon = halfmoon
-
+window.halfmoon = halfmoon;
 
 /**
  *
@@ -12,7 +14,7 @@ window.halfmoon = halfmoon
  */
 
 function userRow(user) {
-    return `
+	return `
     <tr>
         <td>${user.id}</td>
         <td>${user.firstname}</td>
@@ -32,14 +34,14 @@ function userRow(user) {
 }
 
 async function displayUsers() {
-    const $utc = document.getElementById("users_table").querySelector("tbody");
-    try {
-        const users = await userFacade.getUsers();
-        const rows = Array.isArray(users) ? users.map((user) => userRow(user)).join("") : "<tr><td>No users found...</td></tr>";
-        $utc.innerHTML = rows;
-    } catch (err) {
-        displayError(err);
-    }
+	const $utc = document.getElementById("users_table").querySelector("tbody");
+	try {
+		const users = await userFacade.getUsers();
+		const rows = Array.isArray(users) ? users.map((user) => userRow(user)).join("") : "<tr><td>No users found...</td></tr>";
+		$utc.innerHTML = rows;
+	} catch (err) {
+		displayError(err);
+	}
 }
 
 // Initial load, display our users.
@@ -56,42 +58,45 @@ displayUsers();
 // 2) Reset the form and refresh the user table -- except if an error happened.
 // So having one function to manage all events seems more logical here.
 async function handleFormEvent(event, $form, requestType) {
-    event.preventDefault();
-    const user = formDataToJSON(new FormData($form));
+	event.preventDefault();
+	const user = formToJSON($form);
+	console.log(user);
+	console.log(JSON.stringify(user));
 
-    // Disable submit button to prevent accidental double request.
-    const $submit = $form.querySelector("input[type='submit']");
-    $submit.disabled = true;
+	// Disable submit button to prevent accidental double request.
+	const $submit = $form.querySelector("input[type='submit']");
+	$submit.disabled = true;
 
-    try {
-        let userResponse;
-        let pastTense; // Just for nicer UI
-        // Our 3 types of requests...
-        switch (requestType) {
-            case "create":
-                userResponse = await userRepository.addUser(user);
-                pastTense = "created";
-                break;
-            case "edit":
-                userResponse = await userRepository.editUser(user.id, user);
-                pastTense = "edited";
-                break;
-            case "delete":
-                pastTense = "deleted";
-                userResponse = await userRepository.deleteUser(user.id, user);
-                break;
-            default:
-                throw { code: 400, message: "Unsupported Action, please contact an administrator if this problem persists..." };
-        }
-        $form.reset();
-        closeModals();
-        displaySuccess(`User #${userResponse.id} ${userResponse.fName} ${userResponse.lName} was successfully ${pastTense}.`);
-    } catch (err) {
-        displayError(err);
-    }
-    await displayUsers();
-    // Everything is complete... enable submit...
-    $submit.disabled = false;
+	try {
+		let userResponse;
+		let pastTense; // Just for nicer UI
+		// Our 3 types of requests...
+		switch (requestType) {
+			case "create":
+				userResponse = await userFacade.addUser(user);
+				pastTense = "created";
+				break;
+			case "edit":
+				userResponse = await userRepository.editUser(user.id, user);
+				pastTense = "edited";
+				break;
+			case "delete":
+				pastTense = "deleted";
+				userResponse = await userRepository.deleteUser(user.id, user);
+				break;
+			default:
+				throw { code: 400, message: "Unsupported Action, please contact an administrator if this problem persists..." };
+		}
+		$form.reset();
+		closeModals();
+		displaySuccess(`User #${userResponse.id} ${userResponse.fName} ${userResponse.lName} was successfully ${pastTense}.`);
+	} catch (err) {
+		console.log(err);
+		displayError(err);
+	}
+	await displayUsers();
+	// Everything is complete... enable submit...
+	$submit.disabled = false;
 }
 
 const $fCreateUser = document.getElementById("f_create_user");
@@ -103,7 +108,6 @@ $fEditUser.onsubmit = (e) => handleFormEvent(e, $fEditUser, "edit");
 const $fDeleteUser = document.getElementById("f_delete_user");
 $fDeleteUser.onsubmit = (e) => handleFormEvent(e, $fDeleteUser, "delete");
 
-
 /**
  *
  * Our prompts...
@@ -112,66 +116,65 @@ $fDeleteUser.onsubmit = (e) => handleFormEvent(e, $fDeleteUser, "delete");
 
 // This will save us boilerplate code, as both prompts do almost the same thing.
 async function promptDynamicUserModal($target, requestType) {
-    const id = $target.dataset.id;
+	const id = $target.dataset.id;
 
-    // Update our Edit Modal...
-    const $modal = document.getElementById(`m_${requestType}_user`);
-    $modal.querySelector(".modal-title span").innerText = id;
+	// Update our Edit Modal...
+	const $modal = document.getElementById(`m_${requestType}_user`);
+	$modal.querySelector(".modal-title span").innerText = id;
 
-    try {
-        const user = await userRepository.findUser(id);
+	try {
+		const user = await userRepository.findUser(id);
 
-        // Populate our form with data we already know
-        for (const [key, value] of Object.entries(user)) {
-            const input = $modal.querySelector(`form input[name='${key}']`);
-            if (!input) return;
-            input.value = value;
-            // We don't want the use to edit our data (even though it wouldn't do anything...)
-            if (requestType == "delete") {
-                input.readOnly = true;
-                input.classList.add("disabled");
-            }
-        }
+		// Populate our form with data we already know
+		for (const [key, value] of Object.entries(user)) {
+			const input = $modal.querySelector(`form input[name='${key}']`);
+			if (!input) return;
+			input.value = value;
+			// We don't want the use to edit our data (even though it wouldn't do anything...)
+			if (requestType == "delete") {
+				input.readOnly = true;
+				input.classList.add("disabled");
+			}
+		}
 
-        // Open our modal.
-        window.location.hash = `m_${requestType}_user`;
-    } catch (err) {
-        // If we can't find the user, it was probably deleted by someone else... just refresh the user table..?
-        displayError(err);
-        displayUsers();
-    }
+		// Open our modal.
+		window.location.hash = `m_${requestType}_user`;
+	} catch (err) {
+		// If we can't find the user, it was probably deleted by someone else... just refresh the user table..?
+		displayError(err);
+		displayUsers();
+	}
 }
 // Our edit and delete prompts will be dynamically added, so we have to listen on our entire document.
 document.addEventListener("click", async (e) => {
-    const $target = e.target;
-    if ($target.classList.contains("phoneObject")) {
-        const phoneNumbers = userFacade.getPhoneNumbers($target.dataset.id)
-        document.getElementById("phonePrivate").innerText = phoneNumbers[0].description + ": " + phoneNumbers[0].number
-        document.getElementById("phoneWork").innerText = phoneNumbers[1].description + ": " + phoneNumbers[1].number
-    }
+	const $target = e.target;
+	if ($target.classList.contains("phoneObject")) {
+		const phoneNumbers = userFacade.getPhoneNumbers($target.dataset.id);
+		document.getElementById("phonePrivate").innerText = phoneNumbers[0].description + ": " + phoneNumbers[0].number;
+		document.getElementById("phoneWork").innerText = phoneNumbers[1].description + ": " + phoneNumbers[1].number;
+	}
 
-    if ($target.classList.contains("addressObject")) {
-        const address = userFacade.getAddress($target.dataset.id)
-        document.getElementById("addressStreet").innerText = "Vej: " + address.street
-        document.getElementById("addressPostalcode").innerText = "Postnummer: " + address.postalcode
-        document.getElementById("addressCity").innerText = "By: " + address.city
-    }
+	if ($target.classList.contains("addressObject")) {
+		const address = userFacade.getAddress($target.dataset.id);
+		document.getElementById("addressStreet").innerText = "Vej: " + address.street;
+		document.getElementById("addressPostalcode").innerText = "Postnummer: " + address.postalcode;
+		document.getElementById("addressCity").innerText = "By: " + address.city;
+	}
 
-    if ($target.classList.contains("hobbyObject")) {
-        const hobbies = userFacade.getUserHobbies($target.dataset.id)
-        document.getElementById("hobbyTable").querySelector("tbody").innerHTML = makeHobbyTableRow(hobbies)
-    }
+	if ($target.classList.contains("hobbyObject")) {
+		const hobbies = userFacade.getUserHobbies($target.dataset.id);
+		document.getElementById("hobbyTable").querySelector("tbody").innerHTML = makeHobbyTableRow(hobbies);
+	}
 
-    // Fire our edit prompt
-    if ($target.classList.contains("prompt-edit") || $target.classList.contains("prompt-delete")) {
-        e.preventDefault();
-        promptDynamicUserModal($target, $target.classList.contains("prompt-edit") ? "edit" : "delete");
-    }
+	// Fire our edit prompt
+	if ($target.classList.contains("prompt-edit") || $target.classList.contains("prompt-delete")) {
+		e.preventDefault();
+		promptDynamicUserModal($target, $target.classList.contains("prompt-edit") ? "edit" : "delete");
+	}
 });
 
 function makeHobbyTableRow(hobbies) {
-    return hobbies.map(hobby => `<tr><td>${hobby.name}</td><td>${hobby.category}</td><td>${hobby.type}</td></tr>`)
-
+	return hobbies.map((hobby) => `<tr><td>${hobby.name}</td><td>${hobby.category}</td><td>${hobby.type}</td></tr>`);
 }
 
 /**
@@ -180,21 +183,21 @@ function makeHobbyTableRow(hobbies) {
  *
  */
 function displayError(error) {
-    halfmoon.initStickyAlert({
-        content: error.message || "Unknown error ocurred...",
-        title: `Error - ${error.code || ""}`,
-        alertType: "alert-danger",
-        fillType: "filled",
-    });
+	halfmoon.initStickyAlert({
+		content: error.message || "Unknown error ocurred...",
+		title: `Error - ${error.code || ""}`,
+		alertType: "alert-danger",
+		fillType: "filled",
+	});
 }
 
 function displaySuccess(msg) {
-    halfmoon.initStickyAlert({
-        content: msg || "",
-        title: "Success.",
-        alertType: "alert-success",
-        fillType: "filled",
-    });
+	halfmoon.initStickyAlert({
+		content: msg || "",
+		title: "Success.",
+		alertType: "alert-success",
+		fillType: "filled",
+	});
 }
 
 /**
@@ -206,20 +209,46 @@ function displaySuccess(msg) {
 
 // Why doesn't halfmoon have a good way to just close all modals!?
 function closeModals() {
-    window.location.hash = "#";
+	window.location.hash = "#";
 }
-function formDataToJSON(formData) {
-    let object = {};
-    formData.forEach((value, key) => {
-        // Reflect.has in favor of: object.hasOwnProperty(key)
-        if (!Reflect.has(object, key)) {
-            object[key] = value;
-            return;
-        }
-        if (!Array.isArray(object[key])) {
-            object[key] = [object[key]];
-        }
-        object[key].push(value);
-    });
-    return object;
+
+function formToJSON($form) {
+	const formData = new FormData($form);
+	const data = [...formData.entries()];
+	const asString = data.map((x) => `${encodeURIComponent(x[0])}=${encodeURIComponent(x[1])}`).join("&");
+
+	const object = {};
+
+	parse_str(asString, object);
+
+	for (const [sKey, sValue] of Object.entries(object)) {
+		if (sValue[0] && typeof sValue == "object") {
+			const array = [];
+			Object.values(sValue).forEach((value) => {
+				array.push(value);
+			});
+			object[sKey] = array;
+		}
+	}
+
+	return object;
 }
+
+/**
+ * @deprecated Use formToJson.
+ */
+/*function formDataToJSON(formData) {
+	let object = {};
+	formData.forEach((value, key) => {
+		// Reflect.has in favor of: object.hasOwnProperty(key)
+		if (!Reflect.has(object, key)) {
+			object[key] = value;
+			return;
+		}
+		if (!Array.isArray(object[key])) {
+			object[key] = [object[key]];
+		}
+		object[key].push(value);
+	});
+	return object;
+}*/

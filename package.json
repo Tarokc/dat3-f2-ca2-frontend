@@ -36,6 +36,7 @@
     "core-js": "^3.9.1",
     "halfmoon": "^1.1.1",
     "jquery": "^3.6.0",
+    "locutus": "^2.0.14",
     "regenerator-runtime": "^0.13.7"
   },
   "plugins": [
