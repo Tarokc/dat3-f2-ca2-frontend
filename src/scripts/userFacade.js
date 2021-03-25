@@ -1,11 +1,13 @@
-const API = "https://3sem.dyrhoi.com/ca2/people";
+const API = "https://3sem.dyrhoi.com/ca2/api/people";
 
 async function getUsers() {
 	const urlPath = `${API}`;
-	return handleHttpErrors(await fetch(urlPath));
+	const users = await handleHttpErrors(await fetch(urlPath));
+	return users.data
 }
 
 async function addUser(user) {
+	console.log(user)
 	const options = makeOptions("POST", user);
 	return handleHttpErrors(await fetch(API, options));
 }
@@ -56,17 +58,17 @@ async function handleHttpErrors(res) {
 	return res.json();
 }
 
-function getPhoneNumbers(id) {
-	return getUserById(id).phone
+async function getPhoneNumbers(id) {
+	return (await findUser(id)).phone
 }
 
-function getAddress(id) {
-	return getUserById(id).address
+async function getAddress(id) {
+	return (await findUser(id)).address
 }
 
-function getUserHobbies(id) {
-	console.log(getUserById(id).hobbies)
-	return getUserById(id).hobbies
+
+async function getUserHobbies(id) {
+	return (await findUser(id)).hobbies
 }
 
 export { getUsers, addUser, deleteUser, editUser, findUser, getPhoneNumbers, getAddress, getUserHobbies };
