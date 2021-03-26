@@ -1,3 +1,5 @@
+import { async } from "regenerator-runtime";
+
 const API = "https://3sem.dyrhoi.com/ca2/api/people";
 
 async function getUsers() {
@@ -35,6 +37,7 @@ async function findUser(id) {
 	return handleHttpErrors(await fetch(urlPath));
 }
 
+
 function makeOptions(method, body) {
 	var opts = {
 		method: method,
@@ -71,4 +74,25 @@ async function getUserHobbies(id) {
 	return (await findUser(id)).hobbies
 }
 
-export { getUsers, addUser, deleteUser, editUser, findUser, getPhoneNumbers, getAddress, getUserHobbies };
+async function findUsersBySearchType(searchType, searchValue) {
+	let urlPath = "";
+	let users = [];
+	switch (searchType) {
+		case "phone":
+			urlPath = `${API}/phone/${searchValue}`
+			return handleHttpErrors(await fetch(urlPath));
+			break;
+		case "hobby":
+			urlPath = `${API}/hobby/${searchValue}`
+			users = await handleHttpErrors(await fetch(urlPath));
+			return users.data;
+			break;
+		case "city":
+			urlPath = `${API}/postalcode/${searchValue}`
+			users = await handleHttpErrors(await fetch(urlPath));
+			return users.data;
+			break;
+	}
+}
+
+export { getUsers, addUser, deleteUser, editUser, findUser, getPhoneNumbers, getAddress, getUserHobbies, findUsersBySearchType };

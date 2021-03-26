@@ -4,7 +4,7 @@ import * as userFacade from "./scripts/userFacade";
 import { parse_str } from "locutus/php/strings";
 
 import "halfmoon/css/halfmoon-variables.min.css";
-import halfmoon from "halfmoon";
+import halfmoon, { clickHandler } from "halfmoon";
 window.halfmoon = halfmoon;
 
 /**
@@ -252,3 +252,22 @@ function formToJSON($form) {
 	});
 	return object;
 }*/
+
+
+document.getElementById("searchBtn").onclick = async () => {
+	const value = document.getElementById("searchfield").value
+	const searchType = document.querySelector("#searchBar select").value
+	displayUserBySearchType(searchType, value)
+}
+
+async function displayUserBySearchType(searchType, searchValue) {
+	const $utc = document.getElementById("users_table").querySelector("tbody");
+	try {
+		const users = await userFacade.findUsersBySearchType(searchType, searchValue);
+		const rows = Array.isArray(users) ? users.map((user) => userRow(user)).join("") : "<tr><td>No users found...</td></tr>";
+		$utc.innerHTML = rows;
+		document.getElementById("totalUsersFromSearch").innerText = users.length
+	} catch (err) {
+		displayError(err);
+	}
+}
