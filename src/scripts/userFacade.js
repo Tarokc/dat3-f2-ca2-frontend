@@ -5,6 +5,15 @@ async function getUsers() {
 	const users = await handleHttpErrors(await fetch(urlPath));
 	return users.data
 }
+async function getAllHobbies() {
+	const hobbyURL = "https://3sem.dyrhoi.com/ca2/api/hobbies"
+	const hobbies = await handleHttpErrors(await fetch(hobbyURL))
+	return hobbies.data
+}
+async function showHobbies() {
+	//console.log(await getAllHobbies())
+}
+showHobbies()
 
 async function addUser(user) {
 	console.log(user)
@@ -71,4 +80,5 @@ async function getUserHobbies(id) {
 	return (await findUser(id)).hobbies
 }
 
-export { getUsers, addUser, deleteUser, editUser, findUser, getPhoneNumbers, getAddress, getUserHobbies };
+
+export { getUsers, addUser, deleteUser, editUser, findUser, getPhoneNumbers, getAddress, getUserHobbies, getAllHobbies };
