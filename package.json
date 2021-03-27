@@ -37,6 +37,7 @@
     "autocompleter": "^6.1.0",
     "awesomplete": "^1.1.5",
     "bootstrap": "^4.5.2",
+    "choices.js": "^9.0.1",
     "core-js": "^3.9.1",
     "halfmoon": "^1.1.1",
     "jquery": "^3.6.0",
